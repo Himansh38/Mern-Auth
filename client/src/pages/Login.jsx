@@ -9,7 +9,7 @@ const Login = () => {
 
   const navigate = useNavigate()
 
-  const {backendUrl , setIsLoggedin} = useContext(AppContent)
+  const {backendUrl , setIsLoggedIn ,getUserData } = useContext(AppContent)
 
   const [state, setState] = useState('Sign Up')
   const [name, setName] = useState('')
@@ -25,17 +25,19 @@ const onSubitHandler = async (e)=>{
       const {data} = await axios.post(backendUrl + '/api/auth/register',{name , email, password}) 
 
       if(data.success){
-        setIsLoggedin(true)
+        setIsLoggedIn(true)
+        getUserData()
         navigate('/')
       }else{
-        toast.error(data.message)
+        toast.error(error.message)
       }
 
     }else{
-      const {data} = await axios.post(backendUrl + '/api/auth/login',{name , email, password}) 
+      const {data} = await axios.post(backendUrl + '/api/auth/login',{ email, password}) 
 
       if(data.success){
-        setIsLoggedin(true)
+        setIsLoggedIn(true)
+        getUserData()
         navigate('/')
       }else{
         toast.error(data.message)
