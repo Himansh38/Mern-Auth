@@ -10,11 +10,28 @@ const app = express();
 const port = process.env.PORT || 4000;
 connectDB();
 
-const allowedOrigins = ['http://localhost:5173','https://mern-auth-delta-six.vercel.app']
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+    process.env.FRONTEND_URL,
+    'http://localhost:5173',
+    'https://mern-auth-delta-six.vercel.app',
+].filter(Boolean);
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow non-browser tools (no Origin header) and configured frontend origins.
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+};
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({origin : allowedOrigins,credentials : true}))
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 //API Endpoints 
 app.get('/', (req, res)=> res.send("server is running"))
