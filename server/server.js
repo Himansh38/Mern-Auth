@@ -17,15 +17,24 @@ const allowedOrigins = [
     'https://mern-auth-delta-six.vercel.app',
 ].filter(Boolean);
 
+const isAllowedOrigin = (origin) => {
+    if (!origin) return true; // non-browser requests
+    if (allowedOrigins.includes(origin)) return true;
+    // Allow Vercel preview/prod domains for this project family.
+    if (/^https:\/\/mern-auth-.*\.vercel\.app$/.test(origin)) return true;
+    return false;
+};
+
 const corsOptions = {
     origin: (origin, callback) => {
-        // Allow non-browser tools (no Origin header) and configured frontend origins.
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (isAllowedOrigin(origin)) {
             return callback(null, true);
         }
         return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(express.json());
